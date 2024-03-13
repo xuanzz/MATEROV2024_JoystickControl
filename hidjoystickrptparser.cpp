@@ -64,8 +64,8 @@ void JoystickEvents::OnGamePadChanged(const GamePadEventData *evt) {
         PrintHex<uint8_t > (evt->Z2, 0x80);
         Serial.print("\tY2: ");
         PrintHex<uint8_t > (evt->Rz, 0x80);
-        Serial.print("\tRz: ");
-        PrintHex<uint8_t > (evt->X, 0x80);
+        // Serial.print("\tRz: ");
+        // PrintHex<uint8_t > (evt->X, 0x80);
         Serial.println("");
 }
 
@@ -78,8 +78,6 @@ void JoystickEvents::OnHatSwitch(uint8_t hat) {
 void JoystickEvents::OnButtonUp(uint8_t but_id) {
         Serial.print("Up: ");
         Serial.println(but_id, DEC);
-        if (but_id == 4)
-        Serial.println("Hello");
 }
 
 void JoystickEvents::OnButtonDn(uint8_t but_id) {
