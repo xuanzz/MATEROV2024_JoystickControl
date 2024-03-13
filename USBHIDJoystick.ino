@@ -65,6 +65,7 @@ void usbState()
                 {
                 case (USB_DETACHED_SUBSTATE_WAIT_FOR_DEVICE):
                         E_Notify(PSTR("\r\nWaiting for device..."), 0x80);
+                        printToScreen("Waiting for", "device...");
                         break;
                 case (USB_ATTACHED_SUBSTATE_RESET_DEVICE):
                         E_Notify(PSTR("\r\nDevice connected. Resetting..."), 0x80);
@@ -94,6 +95,14 @@ void usbState()
                                 print_hex(buf.idVendor, 16);
                                 E_Notify(PSTR("\r\nProduct ID:\t\t"), 0x80);
                                 print_hex(buf.idProduct, 16);
+                                if (String(buf.idProduct, HEX) == "c219")
+                                {
+                                        printToScreen("F710 Joystick", "Connected");
+                                }
+                                else
+                                {
+                                        printToScreen("F710 Joystick", "Not Connected");
+                                }
                                 E_Notify(PSTR("\r\n"), 0x80);
                                 /**/
                         }
