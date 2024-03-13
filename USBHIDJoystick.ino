@@ -1,6 +1,8 @@
 #include <usbhid.h>
 #include <hiduniversal.h>
 #include <usbhub.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
 // Satisfy IDE, which only needs to see the include statment in the ino.
 #ifdef dobogusinclude
@@ -9,6 +11,10 @@
 #include <SPI.h>
 
 #include "hidjoystickrptparser.h"
+
+// Initialize the LiquidCrystal_I2C object
+// Parameters: (I2C address, Number of columns, Number of rows)
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 /* variables */
 uint8_t rcode;
@@ -25,6 +31,10 @@ JoystickReportParser Joy(&JoyEvents);
 
 void setup() {
         Serial.begin(115200);
+        // Initialize the LCD
+        lcd.init();
+        lcd.backlight();
+        printToScreen("USB HID Joystick", "Initializing...");
 #if !defined(__MIPSEL__)
         while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
 #endif
@@ -119,4 +129,13 @@ void print_hex(int v, int num_places)
                 digit = ((v >> (num_nibbles - 1) * 4)) & 0x0f;
                 Serial.print(digit, HEX);
         } while (--num_nibbles);
+}
+
+void printToScreen(String line1, String line2)
+{
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(line1);
+        lcd.setCursor(0, 1);
+        lcd.print(line2);
 }
