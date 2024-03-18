@@ -29,6 +29,12 @@ HIDUniversal Hid(&Usb);
 JoystickEvents JoyEvents;
 JoystickReportParser Joy(&JoyEvents);
 
+// Joystick values
+int* X1, *Y1, *X2, *Y2; // Pointers to Joysticks (X and Y)
+bool* button[11]; // Button array
+int* hatSwitch; // Hat switch, 0-7 for direction or 8 for no press.
+bool joystickConnected = false; // Joystick connected flag
+
 void setup() {
         Serial.begin(115200);
         // Initialize the LCD
@@ -52,6 +58,7 @@ void setup() {
 void loop() {
         Usb.Task();
         usbState();
+        updateJoystickState();
 }
 
 void usbState()
@@ -147,4 +154,60 @@ void printToScreen(String line1, String line2)
         lcd.print(line1);
         lcd.setCursor(0, 1);
         lcd.print(line2);
+}
+
+void updateJoystickState()
+{
+  int lxa =  JoyEvents.lx;        //  map( JoyEvents.lx, 0, 127,0, 1023);      //map(JoyEvents.Y, 0, 0xFF, 0.f, 255.f);
+  int lya = JoyEvents.ly;           //map(JoyEvents.ly, 0, 127, 0, 1023);                   // map(JoyEvents.Z1, 0, 0xFF, 0.f, 255.f);
+  int rxa = JoyEvents.rx;          //         map(JoyEvents.rx, 0, 127, 0, 1023); // map(JoyEvents.Z2, 0, 0xFF, 0.f, 255.f);
+  int rya = JoyEvents.ry;          // map(JoyEvents.ry, 0, 127, 0, 1023); // map(JoyEvents.Rz, 0, 0xFF, 0.f, 255.f);
+  //Group initialize
+  int blue = Joy.blue;
+  int green = Joy.green;
+  int red = Joy.red;
+  int yellow = Joy.yellow;
+  int L1 = Joy.lb;
+  int R1 = Joy.rb;
+  int gpad = JoyEvents.ht;
+  int L2 = Joy.lt;
+  int R2 = Joy.rt;
+  int back = Joy.bk;
+  int start = Joy.st;
+  int leftjoy = Joy.jl;
+  int rightjoy = Joy.jr;
+  lxa = lxa - 128;
+  lya = 127 - lya;
+  rxa = rxa - 128;
+  rya = 127 - rya;
+  
+  //create a HEX value for the buttons
+        int buttons = 0;
+        if (blue) buttons |= 0x0001;
+        if (green) buttons |= 0x0002;
+        if (red) buttons |= 0x0004;
+        if (yellow) buttons |= 0x0008;
+        if (L1) buttons |= 0x0010;
+        if (R1) buttons |= 0x0020;
+        if (L2) buttons |= 0x0040;
+        if (R2) buttons |= 0x0080;
+        if (back) buttons |= 0x0100;
+        if (start) buttons |= 0x0200;
+        if (leftjoy) buttons |= 0x0400;
+        if (rightjoy) buttons |= 0x0800;
+        if (buttons == 0) buttons = 0x0000;
+        Serial.print("J:");
+        Serial.print("B");
+        Serial.print(buttons, HEX);
+        Serial.print("Xa");
+        Serial.print(lxa);
+        Serial.print("Ya");
+        Serial.print(lya);
+        Serial.print("Xb");
+        Serial.print(rxa);
+        Serial.print("Yb");
+        Serial.print(rya);
+        Serial.print("H");
+        Serial.print(gpad);
+        Serial.println();
 }

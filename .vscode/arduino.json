@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
-    "port": "COM6",
+    "port": "COM8",
     "output": "../output",
     "sketch": "USBHIDJoystick.ino"
 }
