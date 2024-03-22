@@ -156,58 +156,54 @@ void printToScreen(String line1, String line2)
         lcd.print(line2);
 }
 
-void updateJoystickState()
-{
-  int lxa =  JoyEvents.lx;        //  map( JoyEvents.lx, 0, 127,0, 1023);      //map(JoyEvents.Y, 0, 0xFF, 0.f, 255.f);
-  int lya = JoyEvents.ly;           //map(JoyEvents.ly, 0, 127, 0, 1023);                   // map(JoyEvents.Z1, 0, 0xFF, 0.f, 255.f);
-  int rxa = JoyEvents.rx;          //         map(JoyEvents.rx, 0, 127, 0, 1023); // map(JoyEvents.Z2, 0, 0xFF, 0.f, 255.f);
-  int rya = JoyEvents.ry;          // map(JoyEvents.ry, 0, 127, 0, 1023); // map(JoyEvents.Rz, 0, 0xFF, 0.f, 255.f);
-  //Group initialize
-  int blue = Joy.blue;
-  int green = Joy.green;
-  int red = Joy.red;
-  int yellow = Joy.yellow;
-  int L1 = Joy.lb;
-  int R1 = Joy.rb;
-  int gpad = JoyEvents.ht;
-  int L2 = Joy.lt;
-  int R2 = Joy.rt;
-  int back = Joy.bk;
-  int start = Joy.st;
-  int leftjoy = Joy.jl;
-  int rightjoy = Joy.jr;
-  lxa = lxa - 128;
-  lya = 127 - lya;
-  rxa = rxa - 128;
-  rya = 127 - rya;
-  
-  //create a HEX value for the buttons
-        int buttons = 0;
-        if (blue) buttons |= 0x0001;
-        if (green) buttons |= 0x0002;
-        if (red) buttons |= 0x0004;
-        if (yellow) buttons |= 0x0008;
-        if (L1) buttons |= 0x0010;
-        if (R1) buttons |= 0x0020;
-        if (L2) buttons |= 0x0040;
-        if (R2) buttons |= 0x0080;
-        if (back) buttons |= 0x0100;
-        if (start) buttons |= 0x0200;
-        if (leftjoy) buttons |= 0x0400;
-        if (rightjoy) buttons |= 0x0800;
-        if (buttons == 0) buttons = 0x0000;
-        Serial.print("J:");
-        Serial.print("B");
-        Serial.print(buttons, HEX);
-        Serial.print("Xa");
-        Serial.print(lxa);
-        Serial.print("Ya");
-        Serial.print(lya);
-        Serial.print("Xb");
-        Serial.print(rxa);
-        Serial.print("Yb");
-        Serial.print(rya);
-        Serial.print("H");
-        Serial.print(gpad);
+void updateJoystickState() {
+        int lxa = JoyEvents.lx - 128;
+        int lya = 127 - JoyEvents.ly;
+        int rxa = JoyEvents.rx - 128;
+        int rya = 127 - JoyEvents.ry;
+
+        int buttons = (Joy.blue ? 0x001 : 0) |
+                (Joy.green ? 0x002 : 0) |
+                (Joy.red ? 0x004 : 0) |
+                (Joy.yellow ? 0x008 : 0) |
+                (Joy.lb ? 0x010 : 0) |
+                (Joy.rb ? 0x020 : 0) |
+                (Joy.lt ? 0x040 : 0) |
+                (Joy.rt ? 0x080 : 0) |
+                (Joy.bk ? 0x100 : 0) |
+                (Joy.st ? 0x200 : 0) |
+                (Joy.jl ? 0x400 : 0) |
+                (Joy.jr ? 0x800 : 0);
+
+        if (buttons == 0) buttons = 0x000;
+
+        Serial.print("Joy ");
+        Serial.print(buttons & 0x00F, HEX);
+        Serial.print(" ");
+        Serial.print((buttons >> 4) & 0x0F, HEX);
+        Serial.print(" ");
+        Serial.print(buttons >> 8, HEX);
+        Serial.print(" ");
+        Serial.print(JoyEvents.ht);
+        Serial.print(" ");
+        Serial.print(lxa < 0 ? "-" : "+");
+        Serial.print(abs(lxa) < 100 ? "0" : String(abs(lxa) / 100));
+        Serial.print(abs(lxa) < 10 ? "0" : String((abs(lxa) / 10) % 10));
+        Serial.print(abs(lxa) % 10);
+        Serial.print(" ");
+        Serial.print(lya < 0 ? "-" : "+");
+        Serial.print(abs(lya) < 100 ? "0" : String(abs(lya) / 100));
+        Serial.print(abs(lya) < 10 ? "0" : String((abs(lya) / 10) % 10));
+        Serial.print(abs(lya) % 10);
+        Serial.print(" ");
+        Serial.print(rxa < 0 ? "-" : "+");
+        Serial.print(abs(rxa) < 100 ? "0" : String(abs(rxa) / 100));
+        Serial.print(abs(rxa) < 10 ? "0" : String((abs(rxa) / 10) % 10));
+        Serial.print(abs(rxa) % 10);
+        Serial.print(" ");
+        Serial.print(rya < 0 ? "-" : "+");
+        Serial.print(abs(rya) < 100 ? "0" : String(abs(rya) / 100));
+        Serial.print(abs(rya) < 10 ? "0" : String((abs(rya) / 10) % 10));
+        Serial.print(abs(rya) % 10);
         Serial.println();
 }
