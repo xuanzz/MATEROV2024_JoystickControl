@@ -56,31 +56,33 @@ void JoystickReportParser::Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8
 }
 
 void JoystickEvents::OnGamePadChanged(const GamePadEventData *evt) {
-        Serial.print("X1: ");
-        PrintHex<uint8_t > (evt->Y, 0x80);
-        Serial.print("\tY1: ");
-        PrintHex<uint8_t > (evt->Z1, 0x80);
-        Serial.print("\tX2: ");
-        PrintHex<uint8_t > (evt->Z2, 0x80);
-        Serial.print("\tY2: ");
-        PrintHex<uint8_t > (evt->Rz, 0x80);
-        // Serial.print("\tRz: ");
-        // PrintHex<uint8_t > (evt->X, 0x80);
-        Serial.println("");
+        Serial.print("M,");
+        Serial.println(map(evt->Y, 0, 255, 80, 100));
+        // Serial.print("X1: ");
+        // PrintHex<uint8_t > (evt->Y, 0x80);
+        // Serial.print("\tY1: ");
+        // PrintHex<uint8_t > (evt->Z1, 0x80);
+        // Serial.print("\tX2: ");
+        // PrintHex<uint8_t > (evt->Z2, 0x80);
+        // Serial.print("\tY2: ");
+        // PrintHex<uint8_t > (evt->Rz, 0x80);
+        // Serial.println("");
 }
 
 void JoystickEvents::OnHatSwitch(uint8_t hat) {
-        Serial.print("Hat Switch: ");
-        PrintHex<uint8_t > (hat, 0x80);
+        Serial.print("H,");
+        Serial.print(hat, DEC);
         Serial.println("");
 }
 
 void JoystickEvents::OnButtonUp(uint8_t but_id) {
-        Serial.print("Up: ");
-        Serial.println(but_id, DEC);
+        Serial.print("F,");
+        Serial.print(but_id, DEC);
+        Serial.println(",0");
 }
 
 void JoystickEvents::OnButtonDn(uint8_t but_id) {
-        Serial.print("Dn: ");
-        Serial.println(but_id, DEC);
+        Serial.print("F,");
+        Serial.print(but_id, DEC);
+        Serial.println(",1");
 }
