@@ -20,7 +20,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 uint8_t rcode;
 uint8_t usbstate;
 uint8_t laststate;
-//uint8_t buf[sizeof(USB_DEVICE_DESCRIPTOR)];
+// uint8_t buf[sizeof(USB_DEVICE_DESCRIPTOR)];
 USB_DEVICE_DESCRIPTOR buf;
 
 USB Usb;
@@ -30,19 +30,21 @@ JoystickEvents JoyEvents;
 JoystickReportParser Joy(&JoyEvents);
 
 // Joystick values
-int* X1, *Y1, *X2, *Y2; // Pointers to Joysticks (X and Y)
-bool* button[11]; // Button array
-int* hatSwitch; // Hat switch, 0-7 for direction or 8 for no press.
+int *X1, *Y1, *X2, *Y2;         // Pointers to Joysticks (X and Y)
+bool *button[11];               // Button array
+int *hatSwitch;                 // Hat switch, 0-7 for direction or 8 for no press.
 bool joystickConnected = false; // Joystick connected flag
 
-void setup() {
+void setup()
+{
         Serial.begin(115200);
         // Initialize the LCD
         lcd.init();
         lcd.backlight();
         printToScreen("USB HID Joystick", "Initializing...");
 #if !defined(__MIPSEL__)
-        while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+        while (!Serial)
+                ; // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
 #endif
         Serial.println("Start");
 
@@ -52,10 +54,11 @@ void setup() {
         delay(200);
 
         if (!Hid.SetReportParser(0, &Joy))
-                ErrorMessage<uint8_t > (PSTR("SetReportParser"), 1);
+                ErrorMessage<uint8_t>(PSTR("SetReportParser"), 1);
 }
 
-void loop() {
+void loop()
+{
         Usb.Task();
         usbState();
         printJoystickState();
@@ -156,26 +159,28 @@ void printToScreen(String line1, String line2)
         lcd.print(line2);
 }
 
-void printJoystickState() {
+void printJoystickState()
+{
         int lxa = JoyEvents.lx - 128;
         int lya = 127 - JoyEvents.ly;
         int rxa = JoyEvents.rx - 128;
         int rya = 127 - JoyEvents.ry;
 
         int buttons = (Joy.blue ? 0x001 : 0) |
-                (Joy.green ? 0x002 : 0) |
-                (Joy.red ? 0x004 : 0) |
-                (Joy.yellow ? 0x008 : 0) |
-                (Joy.lb ? 0x010 : 0) |
-                (Joy.rb ? 0x020 : 0) |
-                (Joy.lt ? 0x040 : 0) |
-                (Joy.rt ? 0x080 : 0) |
-                (Joy.bk ? 0x100 : 0) |
-                (Joy.st ? 0x200 : 0) |
-                (Joy.jl ? 0x400 : 0) |
-                (Joy.jr ? 0x800 : 0);
+                      (Joy.green ? 0x002 : 0) |
+                      (Joy.red ? 0x004 : 0) |
+                      (Joy.yellow ? 0x008 : 0) |
+                      (Joy.lb ? 0x010 : 0) |
+                      (Joy.rb ? 0x020 : 0) |
+                      (Joy.lt ? 0x040 : 0) |
+                      (Joy.rt ? 0x080 : 0) |
+                      (Joy.bk ? 0x100 : 0) |
+                      (Joy.st ? 0x200 : 0) |
+                      (Joy.jl ? 0x400 : 0) |
+                      (Joy.jr ? 0x800 : 0);
 
-        if (buttons == 0) buttons = 0x000;
+        if (buttons == 0)
+                buttons = 0x000;
 
         Serial.print("Joy ");
         Serial.print(buttons & 0x00F, HEX);
