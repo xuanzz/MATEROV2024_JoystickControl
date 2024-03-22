@@ -58,7 +58,7 @@ void setup() {
 void loop() {
         Usb.Task();
         usbState();
-        updateJoystickState();
+        printJoystickState();
 }
 
 void usbState()
@@ -156,7 +156,7 @@ void printToScreen(String line1, String line2)
         lcd.print(line2);
 }
 
-void updateJoystickState() {
+void printJoystickState() {
         int lxa = JoyEvents.lx - 128;
         int lya = 127 - JoyEvents.ly;
         int rxa = JoyEvents.rx - 128;
