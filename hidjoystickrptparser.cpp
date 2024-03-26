@@ -70,10 +70,13 @@ void JoystickEvents::OnGamePadChanged(const GamePadEventData *evt)
         int x1, y1, x2, y2;
         int m1Val,m2Val,m3Val,m4Val,m5Val,m6Val,m7Val,m8Val;
         x1 = map(evt->Y, 0, 255, motorMinVal, motorMaxVal);  // map the value of X1
-        y1 = map(evt->Z1, 0, 255, motorMinVal, motorMaxVal); // map the val of Y1
+        y1 = map(evt->Z1, 0, 255, motorMinVal, motorMaxVal); // map the val of Y1    
+        y2 = map(evt->Rz, 0, 255, motorMinVal, motorMaxVal); //map the val of y2
         m1Val = constrain((x1 + y1),motorMinVal,motorMaxVal); //limit the value of left motor
         m2Val = constrain((y1 - x1),motorMinVal,motorMaxVal); //limit the value of right motor
-        Serial.println("M," + String(m1Val) + "," + String(m2Val));
+        m3Val = constrain(y2 ,motorMinVal, motorMaxVal);
+        m4Val = constrain(y2 ,motorMinVal,motorMaxVal);
+        Serial.println("M," + String(m1Val) + "," + String(m2Val) + "," + String(m3Val) + "," + String(m4Val));
         
         // Serial.print("X1: ");
         // PrintHex<uint8_t > (evt->Y, 0x80);
