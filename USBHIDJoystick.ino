@@ -20,7 +20,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 uint8_t rcode;
 uint8_t usbstate;
 uint8_t laststate;
-//uint8_t buf[sizeof(USB_DEVICE_DESCRIPTOR)];
+String readString; // String to hold incoming command from serial port
+// uint8_t buf[sizeof(USB_DEVICE_DESCRIPTOR)];
 USB_DEVICE_DESCRIPTOR buf;
 
 USB Usb;
@@ -29,14 +30,16 @@ HIDUniversal Hid(&Usb);
 JoystickEvents JoyEvents;
 JoystickReportParser Joy(&JoyEvents);
 
-void setup() {
+void setup()
+{
         Serial.begin(115200);
         // Initialize the LCD
         lcd.init();
         lcd.backlight();
         printToScreen("USB HID Joystick", "Initializing...");
 #if !defined(__MIPSEL__)
-        while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+        while (!Serial)
+                ; // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
 #endif
         Serial.println("Start");
 
@@ -46,12 +49,30 @@ void setup() {
         delay(200);
 
         if (!Hid.SetReportParser(0, &Joy))
-                ErrorMessage<uint8_t > (PSTR("SetReportParser"), 1);
+                ErrorMessage<uint8_t>(PSTR("SetReportParser"), 1);
 }
 
-void loop() {
+void loop()
+{
         Usb.Task();
         usbState();
+        if (Serial.available())
+        {
+                char c = Serial.read(); // Get one byte from serial buffer
+                if (c == '\r')
+                {
+                        processCommand(readString); // Process the command
+                        readString = "";            // Clear the string for new input
+                }
+                else if (c == '\n')
+                {
+                        // Do nothing
+                }
+                else
+                {
+                        readString += c; // Build the string
+                }
+        }
 }
 
 void usbState()
@@ -147,4 +168,22 @@ void printToScreen(String line1, String line2)
         lcd.print(line1);
         lcd.setCursor(0, 1);
         lcd.print(line2);
+}
+
+void processCommand(String command)
+{
+        char functionType = command.charAt(0); // Get the function type (M or F)
+        command = command.substring(2);        // Remove the function type and comma from the command
+        int commaIndex = command.indexOf(','); // Find the index of the first comma
+        // Serial.println("Function type: " + functionType);
+        if (functionType == 'T')
+        {
+                // Motor control function
+                Serial.println("Temperature: " + command);
+                printToScreen("Temp: " + String(command[0])+String(command[1])+"."+String(command[2])+String(command[3])+"C","");
+        }
+        else
+        {
+                Serial.println("Invalid function type");
+        }
 }
