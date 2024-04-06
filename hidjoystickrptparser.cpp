@@ -1,7 +1,9 @@
 #include "Arduino.h"
 #include "hidjoystickrptparser.h"
-int motorMinVal = 70;
-int motorMaxVal = 110;
+int motorMinVal = -20; //value of MinVal after plus the medium val
+int motorMaxVal = 20; //value of MaxVal after plus the medium val
+int motorStop = 94;
+int m56otorStop = 90; //medium value of motors updownward(behind)
 
 JoystickReportParser::JoystickReportParser(JoystickEvents *evt) : joyEvents(evt),
                                                                   oldHat(0xDE),
@@ -69,14 +71,19 @@ void JoystickEvents::OnGamePadChanged(const GamePadEventData *evt)
 {
         int x1, y1, x2, y2;
         int m1Val,m2Val,m3Val,m4Val,m5Val,m6Val,m7Val,m8Val;
-        x1 = evt->Y;  // map the value of X1
-        y1 = evt->Z1; // map the val of Y1    
-        y2 = evt->Rz; //map the val of y2
-        m1Val = map((x1 + y1),0,512,motorMinVal,motorMaxVal); //limit the value of left motor
-        m2Val = map((y1 - x1),0,512,motorMinVal,motorMaxVal); //limit the value of right motor
-        m3Val = map(y2 ,0,255, motorMinVal, motorMaxVal);
-        m4Val = map(y2 ,0,255, motorMinVal, motorMaxVal);
-        Serial.println("M," + String(m1Val) + "," + String(m2Val) + "," + String(m3Val) + "," + String(m4Val));
+        // int xVal = ((evt->Y > 123) && (evt->Y < 133)?128:evt->Y);
+        // int yVal = ((evt->Z1 > 123) && (evt->Z1 < 133)?128:evt->Z1);
+        // int zVal = ((evt->Rz > 123) && (evt->Rz < 133)?128:evt->Rz);
+        x1 = map((evt->Y),0,255,motorMinVal,motorMaxVal);  // map the value of X1
+        y1 = map((evt->Z1),0,255,motorMinVal,motorMaxVal); // map the val of Y1    
+        y2 = map((evt->Rz),0,255,motorMinVal,motorMaxVal); //map the val of y2
+        m1Val = motorStop+constrain((x1+y1),motorMinVal,motorMaxVal); //limit the value of left motor
+        m2Val = motorStop+constrain((y1-x1),motorMinVal,motorMaxVal); //limit the value of right motor
+        m3Val = motorStop+y2;
+        m4Val = motorStop+y2;
+        m5Val = m56otorStop-y2;
+        m6Val = m56otorStop-y2;
+        Serial.println("M," + String(m1Val) + "," + String(m2Val) + "," + String(m3Val) + "," + String(m4Val) + "," +String(m5Val) + "," + String(m6Val));
         
         // Serial.print("X1: ");
         // PrintHex<uint8_t > (evt->Y, 0x80);
